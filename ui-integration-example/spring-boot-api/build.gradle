@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.2'
+    id 'io.spring.dependency-management' version '1.1.2'
+    id "com.github.node-gradle.node" version "5.0.0"
+}
+
+group = 'com.learn.vs.integration'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+bootJar{
+    enabled=true
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+}
+node {
+    // Version of node to use.
+    version = '16.13.0'
+
+    // Base URL for fetching node distributions (change if you have a mirror).
+//    distBaseUrl = 'https://nodejs.org/dist'
+
+    // If true, it will download node using above parameters.
+    // If false, it will try to use globally installed node.
+    download = true
+
+    // Set the work directory for unpacking node
+    workDir = file("${project.projectDir}/src/react-ui/nodejs")
+
+    // Set the work directory for NPM
+    npmWorkDir = file("${project.projectDir}/src/react-ui/npm")
+
+    // Set the work directory where node_modules should be located
+    nodeModulesDir = file("${project.projectDir}/src/react-ui")
+}
+
+
+processResources{
+    dependsOn 'copyFrontendToBuild'
+}
+
+task copyFrontendToBuild(type: Copy) {
+    dependsOn 'npmBuild'
+    from "$projectDir/src/react-ui/build/"
+//    include "*"
+    into "$projectDir/src/main/resources/static"
+}
+
+
+
+task npmBuild(type: NpmTask) {
+    dependsOn 'npmInstallDependencies'
+    execOverrides {
+//        it.ignoreExitValue = true
+        it.workingDir = 'src/react-ui'
+    }
+    args = ['run', 'build']
+}
+
+task npmShowVersion(type: NpmTask) {
+    execOverrides {
+        it.ignoreExitValue = true
+        it.workingDir = 'src/react-ui'
+    }
+    args = ['--version']
+}
+
+task npmInstallDependencies(type: NpmTask) {
+
+    execOverrides {
+        it.ignoreExitValue = true
+        it.workingDir = 'src/react-ui'
+    }
+    args = ['install']
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
