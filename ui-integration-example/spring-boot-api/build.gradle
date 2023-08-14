@@ -51,8 +51,16 @@ node {
 processResources{
     dependsOn 'copyFrontendToBuild'
 }
+task deletePreviouStatic(type: Delete) {
+    delete "$projectDir/src/main/resources/static/"
+}
+
+task deletePreviouBuild(type: Delete) {
+    delete "$projectDir/src/react-ui/build/"
+}
 
 task copyFrontendToBuild(type: Copy) {
+    dependsOn 'deletePreviouStatic'
     dependsOn 'npmBuild'
     from "$projectDir/src/react-ui/build/"
 //    include "*"
@@ -62,6 +70,7 @@ task copyFrontendToBuild(type: Copy) {
 
 
 task npmBuild(type: NpmTask) {
+    dependsOn 'deletePreviouBuild'
     dependsOn 'npmInstallDependencies'
     execOverrides {
 //        it.ignoreExitValue = true
