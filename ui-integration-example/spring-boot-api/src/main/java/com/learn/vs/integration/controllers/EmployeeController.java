@@ -1,4 +1,4 @@
-package net.javaguides.springboot.controller;
+package com.learn.vs.integration.controllers;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +19,7 @@ import com.learn.vs.integration.exception.ResourceNotFoundException;
 import com.learn.vs.integration.model.Employee;
 import com.learn.vs.integration.repository.EmployeeRepository;
 
-@CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping("/api/v1/")
 public class EmployeeController {
@@ -29,7 +28,7 @@ public class EmployeeController {
 	private EmployeeRepository employeeRepository;
 	
 	// get all employees
-	@GetMapping("/allemployees")
+	@GetMapping("/employees")
 	public List<Employee> getAllEmployees(){
 		return employeeRepository.findAll();
 	}		
